@@ -3,12 +3,24 @@
 import wiuppy as wiu
 
 if __name__ == '__main__':
-    import argparse
-    import json
+    import argparse, json, os, configparser
+
+    # look for auth information in the environment
+    client, token = None, None
+    if 'WIUPPY_CLIENT' in os.environ:
+        client = os.environ['WIUPPY_CLIENT']
+    if 'WIUPPY_TOKEN' in os.environ:
+        token = os.environ['WIUPPY_TOKEN']
+
+    # look for auth information in a config file
+    config = configparser.ConfigParser()
+    if config.read([os.path.join(os.path.expanduser('~'), '.wiuppy')]):
+        client = config['Auth'].get('client', client)
+        token = config['Auth'].get('token', token)
 
     parser = argparse.ArgumentParser(description='Make a request against the WIU API')
-    parser.add_argument('-c', '--client', required=True, help="Where's It Up client ID (required)")
-    parser.add_argument('-t', '--token', required=True, help="Where's It Up client token (required)")
+    parser.add_argument('-c', '--client', required=not bool(client), help="Where's It Up client ID (required)")
+    parser.add_argument('-t', '--token', required=not bool(token), help="Where's It Up client token (required)")
     parser.add_argument('-u', '--uri', help='uri to query')
     parser.add_argument('-s', '--services', help='comma-separated services to run')
     parser.add_argument('-l', '--locations', help='comma-separated server locations to run from')
@@ -16,7 +28,11 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--poll', action='store_true', help='query the API until the job is complete')
     args = parser.parse_args()
 
-    api = wiu.WIU(args.client, args.token)
+    # set up the api using auth information from the environment, config file,
+    # or command-line
+    client = args.client or client
+    token = args.token or token
+    api = wiu.WIU(client, token)
 
     # if a job id is specified, retrieve it
     if args.job:
