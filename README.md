@@ -78,3 +78,16 @@ optional arguments:
 ```
 Run without arguments to get a list of available servers, with `-j` to get the
 results from an existing job, or with `-u`/`-s`/`-l` to submit a new job.
+
+If you'd rather not drop your WIU client and token in the command line every
+time you make a request, you can use either environment variables:
+```{sh}
+export WIUPPY_CLIENT=abcdef
+export WIUPPY_TOKEN=123456
+```
+or a config file at `~/.wiuppy` (`%USERPROFILE%\.wiuppy` on Windows):
+```{ini}
+[Auth]
+client=abcdef
+token=123456
+```
