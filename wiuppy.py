@@ -26,6 +26,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--locations', help='comma-separated server locations to run from')
     parser.add_argument('-j', '--job', help='job ID for an existing request to retrieve')
     parser.add_argument('-p', '--poll', action='store_true', help='query the API until the job is complete')
+    parser.add_argument('-f', '--findtowel', action='store_true')
     args = parser.parse_args()
 
     # set up the api using auth information from the environment, config file,
@@ -33,6 +34,16 @@ if __name__ == '__main__':
     client = args.client or client
     token = args.token or token
     api = wiu.WIU(client, token)
+
+    # find greg's towel
+    if args.findtowel:
+        import random
+        print(
+            'Your towel is in ' \
+            + random.choice(api.locations()['sources'])['name'] \
+            + '!'
+        )
+        exit()
 
     # if a job id is specified, retrieve it
     if args.job:
