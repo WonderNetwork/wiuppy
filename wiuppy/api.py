@@ -88,7 +88,7 @@ class WIU:
         return requests.get(self.URL + endpoint, headers=self.headers).json()
 
     def _post(self, endpoint, data):
-        return requests.get(
+        return requests.post(
             self.URL + endpoint,
             headers=self.headers,
             data=json.dumps(data)
