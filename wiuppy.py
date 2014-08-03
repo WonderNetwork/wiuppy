@@ -19,10 +19,10 @@ if __name__ == '__main__':
         token = config['Auth'].get('token', token)
 
     parser = argparse.ArgumentParser(description='Make a request against the WIU API')
-    parser.add_argument('-c', '--client', required=not bool(client), help="Where's It Up client ID (required)")
-    parser.add_argument('-t', '--token', required=not bool(token), help="Where's It Up client token (required)")
+    parser.add_argument('-C', '--client', required=not bool(client), help="Where's It Up client ID (required)")
+    parser.add_argument('-T', '--token', required=not bool(token), help="Where's It Up client token (required)")
     parser.add_argument('-u', '--uri', help='uri to query')
-    parser.add_argument('-s', '--services', help='comma-separated services to run')
+    parser.add_argument('-t', '--tests', help='comma-separated tests to run')
     parser.add_argument('-l', '--locations', help='comma-separated server locations to run from')
     parser.add_argument('-j', '--job', help='job ID for an existing request to retrieve')
     parser.add_argument('-p', '--poll', action='store_true', help='query the API until the job is complete')
@@ -53,11 +53,11 @@ if __name__ == '__main__':
         exit()
 
     # if a new job is requested, submit it and get the id
-    if args.uri and args.services and args.locations:
+    if args.uri and args.tests and args.locations:
         job = wiu.Job(api)
 
         job.uri = args.uri
-        job.services = args.services.split(',')
+        job.tests = args.tests.split(',')
         job.locations = args.locations.split(',')
         job.submit()
 
@@ -69,4 +69,4 @@ if __name__ == '__main__':
         exit()
 
     # with no arguments, print the server list
-    print(json.dumps(api.locations(), indent=4))
+    print(json.dumps([server['name'] for server in api.locations()['sources']]))

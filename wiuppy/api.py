@@ -6,16 +6,16 @@ class WIU:
     A wrapper for the Where's It Up API
 
     Attributes:
-        URL:     [string] The WIU API URL
+        URL:     [string] The WIU API entry point
         headers: [dict]   Headers to send with API calls
     """
-    URL = 'https://api.wheresitup.com/v2/'
+    URL = 'https://api.wheresitup.com/v4/'
     headers = { 'Content-Type': 'application/json' }
 
     def __init__(self, client, token):
         """
         Initialize an instance of the API with authentication information
-        http://api.wheresitup.com/docs/v2#authentication
+        http://api.wheresitup.com/docs/v4#auth
 
         Args:
             client: [string] WIU client ID
@@ -31,23 +31,23 @@ class WIU:
     def locations(self):
         """
         Get the list of available WIU servers
-        http://api.wheresitup.com/docs/v2#cities
+        http://api.wheresitup.com/docs/v4#sources
 
         Returns:
             A dict containing server details
         """
         return self._get('sources')
 
-    def submit(self, target, services, locations):
+    def submit(self, target, tests, locations):
         """
         Submit a new WIU job
-        http://api.wheresitup.com/docs/v2#jobs
+        http://api.wheresitup.com/docs/v4#jobs
 
         Args:
             target: [string] The URI to be tested
-            services: [list] Services to be performed on the URI
-                See also: http://api.wheresitup.com/docs/v2#services
-            locations: [list] WIU servers to perform services from
+            tests: [list] tests to be performed on the URI
+                See also: http://api.wheresitup.com/docs/v4#tests
+            locations: [list] WIU servers to perform tests from
 
         Returns:
             A string containing the new job ID
@@ -57,10 +57,11 @@ class WIU:
         """
         data = {
             'uri': target,
-            'services': services,
+            'tests': tests,
             'sources': locations
         }
-        response = self._post('submit', data)
+
+        response = self._post('jobs', data)
         try:
             id = response['jobID']
         except KeyError:
@@ -71,7 +72,7 @@ class WIU:
     def retrieve(self, id):
         """
         Get the current results for an existing WIU job
-        http://api.wheresitup.com/docs/v2#reports
+        http://api.wheresitup.com/docs/v4#reports
 
         Args:
             id: [string] WIU job ID to query
@@ -82,7 +83,7 @@ class WIU:
         Raises:
             ValueError: The ID is invalid
         """
-        return self._get('retrieve/' + self._is_valid_id(id))
+        return self._get('jobs/' + self._is_valid_id(id))
 
     def _get(self, endpoint):
         return requests.get(self.URL + endpoint, headers=self.headers).json()

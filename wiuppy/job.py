@@ -9,12 +9,12 @@ class Job:
 
     Attributes:
         uri:       [string] For jobs to be submitted, the URI to test
-        services:  [list]   Services to be performed on the URI
-        locations: [list]   WonderNetwork servers to perform services from
+        tests:  [list]   tests to be performed on the URI
+        locations: [list]   WonderNetwork servers to perform tests from
         results:   [dict]   For submitted jobs, the API-returned results
     """
     uri = ''
-    services = []
+    tests = []
     locations = []
     results = {}
 
@@ -40,10 +40,11 @@ class Job:
         if not self.results:
             return False
 
-        summary = self.results['return']['summary']
-        status = [summary[location][service] for location in summary for service in summary[location]]
+        return len(self.results['response']['in_progress']) == 0
+        #summary = self.results['return']['summary']
+        #status = [summary[location][service] for location in summary for service in summary[location]]
 
-        return not 'in progress' in status
+        #return not 'in progress' in status
 
     def retrieve(self, poll=False):
         """
@@ -57,16 +58,13 @@ class Job:
         Returns:
             self
         """
-        self.results = self._api.retrieve(self.id)
-        if not poll:
-            return self
-
-        while not self.is_complete:
-            print('Polling ' + self.id)
-            sleep(1)
+        while True:
             self.results = self._api.retrieve(self.id)
+            if not poll or self.is_complete:
+                return self
 
-        return self
+            sleep(1)
+            print('Polling ' + self.id)
 
     def submit(self):
         """
@@ -75,14 +73,18 @@ class Job:
         Returns:
             self
         """
-        self.id = self._api.submit(self.uri, self.services, self.locations)
+        self.id = self._api.submit(self.uri, self.tests, self.locations)
 
         return self
 
     def __str__(self):
         out = { 'Job ID': self.id }
         if self.results:
-            out['results'] = self.results['return']['summary']
+            out['results'] = {
+                server: {
+                    test: results['summary'] for (test, results) in tests.items()
+                } for (server, tests) in self.results['response']['complete'].items()
+            }
 
         return json.dumps(out, indent=4)
 
