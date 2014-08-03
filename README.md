@@ -1,6 +1,6 @@
 ## wiuppy
 wiuppy is a Python3 wrapper for the
-[Where's It Up API](https://api.wheresitup.com) (version 2).
+[Where's It Up API](https://api.wheresitup.com) (version 4).
 
 ### Requirements
 
@@ -9,7 +9,7 @@ wiuppy is a Python3 wrapper for the
 
 ### Usage
 
-See the official [Where's It Up documentation](https://api.wheresitup.com/docs/v2)
+See the official [Where's It Up documentation](https://api.wheresitup.com/docs)
 for full API details.
 
 #### Raw API access
@@ -39,7 +39,7 @@ api = wiuppy.WIU(wiu_client_id, wiu_client_token)
 job = wiuppy.Job(api)
 
 job.uri = 'http://www.google.com'
-job.services = [ 'ping', 'dig', 'trace' ]
+job.tests = [ 'ping', 'dig', 'trace' ]
 job.locations = [ 'Denver', 'Lima', 'Sydney' ]
 
 job_id = job.submit().id # fluent interface
@@ -57,27 +57,28 @@ wiuppy.Job(api, job_id).retrieve()
 For convenience, a command-line client is bundled with this project.
 
 ```
-usage: wiuppy.py [-h] -c CLIENT -t TOKEN [-u URI] [-s SERVICES] [-l LOCATIONS]
-                 [-j JOB] [-p]
+usage: wiuppy.py [-h] [-C CLIENT] [-T TOKEN] [-u URI] [-t TESTS]
+                 [-l LOCATIONS] [-j JOB] [-p] [-f]
 
 Make a request against the WIU API
 
 optional arguments:
   -h, --help            show this help message and exit
-  -c CLIENT, --client CLIENT
-                        Where's It Up client ID
-  -t TOKEN, --token TOKEN
-                        Where's It Up client token
+  -C CLIENT, --client CLIENT
+                        Where's It Up client ID (required)
+  -T TOKEN, --token TOKEN
+                        Where's It Up client token (required)
   -u URI, --uri URI     uri to query
-  -s SERVICES, --services SERVICES
-                        comma-separated services to run
+  -t TESTS, --tests TESTS
+                        comma-separated tests to run
   -l LOCATIONS, --locations LOCATIONS
                         comma-separated server locations to run from
-  -j JOB, --job JOB     job ID for an existing job to retrieve
+  -j JOB, --job JOB     job ID for an existing request to retrieve
   -p, --poll            query the API until the job is complete
+  -f, --findtowel
 ```
 Run without arguments to get a list of available servers, with `-j` to get the
-results from an existing job, or with `-u`/`-s`/`-l` to submit a new job.
+results from an existing job, or with `-u`/`-t`/`-l` to submit a new job.
 
 If you'd rather not drop your WIU client and token in the command line every
 time you make a request, you can use either environment variables:
