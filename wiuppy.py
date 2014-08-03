@@ -5,18 +5,19 @@ import wiuppy as wiu
 if __name__ == '__main__':
     import argparse, json, os, configparser
 
-    # look for auth information in the environment
     client, token = None, None
-    if 'WIUPPY_CLIENT' in os.environ:
-        client = os.environ['WIUPPY_CLIENT']
-    if 'WIUPPY_TOKEN' in os.environ:
-        token = os.environ['WIUPPY_TOKEN']
 
     # look for auth information in a config file
     config = configparser.ConfigParser()
     if config.read([os.path.join(os.path.expanduser('~'), '.wiuppy')]):
         client = config['Auth'].get('client', client)
         token = config['Auth'].get('token', token)
+
+    # look for auth information in the environment
+    if 'WIUPPY_CLIENT' in os.environ:
+        client = os.environ['WIUPPY_CLIENT']
+    if 'WIUPPY_TOKEN' in os.environ:
+        token = os.environ['WIUPPY_TOKEN']
 
     parser = argparse.ArgumentParser(description='Make a request against the WIU API')
     parser.add_argument('-C', '--client', required=not bool(client), help="Where's It Up client ID (required)")
