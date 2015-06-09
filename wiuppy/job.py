@@ -41,10 +41,6 @@ class Job:
             return False
 
         return len(self.results['response']['in_progress']) == 0
-        #summary = self.results['return']['summary']
-        #status = [summary[location][service] for location in summary for service in summary[location]]
-
-        #return not 'in progress' in status
 
     def retrieve(self, poll=False):
         """
