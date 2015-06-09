@@ -2,6 +2,19 @@
 
 import wiuppy as wiu
 
+def add_option(options, raw):
+    names, value = raw.split('=', 2)
+    names = names.split(':')
+
+    if value.isdigit():
+        value = int(value)
+
+    o = options
+    last = len(names) - 1
+    for idx, name in enumerate(names):
+        val = value if idx == last else {}
+        o = o.setdefault(name, val)
+
 if __name__ == '__main__':
     import argparse, json, os, configparser
 
@@ -27,6 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--locations', help='comma-separated server locations to run from')
     parser.add_argument('-j', '--job', help='job ID for an existing request to retrieve')
     parser.add_argument('-p', '--poll', action='store_true', help='query the API until the job is complete')
+    parser.add_argument('-o', '--option', action='append', help='set an option for a test as <test>:<option>=<value>, e.g.  nametime:nameserver=8.8.8.8')
     args = parser.parse_args()
 
     # set up the api using auth information from the environment, config file,
@@ -49,6 +63,11 @@ if __name__ == '__main__':
         job.uri = args.uri
         job.tests = args.tests.split(',')
         job.locations = args.locations.split(',')
+        job.options = {}
+
+        if args.option:
+            [add_option(job.options, o) for o in args.option]
+
         job.submit()
 
         if args.poll:

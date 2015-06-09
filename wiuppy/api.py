@@ -38,7 +38,7 @@ class WIU:
         """
         return self._get('sources')
 
-    def submit(self, target, tests, locations):
+    def submit(self, target, tests, locations, options = {}):
         """
         Submit a new WIU job
         http://api.wheresitup.com/docs/v4#jobs
@@ -58,7 +58,8 @@ class WIU:
         data = {
             'uri': target,
             'tests': tests,
-            'sources': locations
+            'sources': locations,
+            'options': options
         }
 
         response = self._post('jobs', data)
