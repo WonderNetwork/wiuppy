@@ -1,5 +1,9 @@
 import requests
+import requests.exceptions
 import json
+
+class Error(Exception):
+    pass
 
 class WIU:
     """
@@ -35,6 +39,9 @@ class WIU:
 
         Returns:
             A dict containing server details
+
+        Raises:
+            Error: API communication failed
         """
         return self._get('sources')
 
@@ -53,7 +60,7 @@ class WIU:
             A string containing the new job ID
 
         Raises:
-            Exception: The submission failed
+            Error: API communication failed, or the submission was invalid
         """
         data = {
             'uri': target,
@@ -63,12 +70,11 @@ class WIU:
         }
 
         response = self._post('jobs', data)
-        try:
-            id = response['jobID']
-        except KeyError:
-            raise Exception('Submission failed: ' + response['message'])
 
-        return id
+        try:
+            return response['jobID']
+        except KeyError:
+            raise Error('Submission failed: ' + response['message'])
 
     def retrieve(self, id):
         """
@@ -83,18 +89,30 @@ class WIU:
 
         Raises:
             ValueError: The ID is invalid
+            Error: API communication failed, or the job was not found
         """
-        return self._get('jobs/' + self._is_valid_id(id))
+        results = self._get('jobs/' + self._is_valid_id(id))
+
+        if 'response' not in results:
+            raise Error(results['message'])
+
+        return results
 
     def _get(self, endpoint):
-        return requests.get(self.URL + endpoint, headers=self.headers).json()
+        try:
+            return requests.get(self.URL + endpoint, headers=self.headers).json()
+        except requests.exceptions.RequestException as e:
+            raise Error('Error talking to the API: ' + str(e))
 
     def _post(self, endpoint, data):
-        return requests.post(
-            self.URL + endpoint,
-            headers=self.headers,
-            data=json.dumps(data)
-        ).json()
+        try:
+            return requests.post(
+                self.URL + endpoint,
+                headers=self.headers,
+                data=json.dumps(data)
+            ).json()
+        except requests.exceptions.RequestException as e:
+            raise Error('Error talking to the API: ' + str(e))
 
     def _is_valid_id(self, id):
         int(id, 16)

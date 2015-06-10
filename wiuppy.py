@@ -52,7 +52,11 @@ if __name__ == '__main__':
     # if a job id is specified, retrieve it
     if args.job:
         job = wiu.Job(api, args.job)
-        print(job.retrieve(args.poll))
+
+        try:
+            print(job.retrieve(args.poll))
+        except wiu.Error as e:
+            print(e)
 
         exit()
 
@@ -68,14 +72,24 @@ if __name__ == '__main__':
         if args.option:
             [add_option(job.options, o) for o in args.option]
 
-        job.submit()
+        try:
+            job.submit()
+        except wiu.Error as e:
+            print(e)
+            exit()
 
         if args.poll:
-            print(job.retrieve(args.poll))
+            try:
+                print(job.retrieve(args.poll))
+            except wiu.Error as e:
+                print(e)
         else:
             print(job)
 
         exit()
 
     # with no arguments, print the server list
-    print(json.dumps([server['name'] for server in api.locations()['sources']]))
+    try:
+        print(json.dumps([server['name'] for server in api.locations()['sources']]))
+    except wiu.Error as e:
+        print(e)
