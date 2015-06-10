@@ -7,6 +7,17 @@ wiuppy is a Python3 wrapper for the
 - Python 3.2
 - [`requests`](http://docs.python-requests.org/)
 
+### Installation
+
+Once you have cloned the repository, you can install the module with `pip` (or
+`pip3` on Ubuntu:
+
+```
+$ git clone https://github.com/WonderNetwork/wiuppy.git
+$ cd wiuppy
+$ sudo pip3 install .
+```
+
 ### Usage
 
 See the official [Where's It Up documentation](https://api.wheresitup.com/docs)
