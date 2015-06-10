@@ -2,6 +2,7 @@
 
 import wiuppy as wiu
 
+
 def add_option(options, raw):
     names, value = raw.split('=', 2)
     names = names.split(':')
@@ -15,8 +16,12 @@ def add_option(options, raw):
         val = value if idx == last else {}
         o = o.setdefault(name, val)
 
+
 if __name__ == '__main__':
-    import argparse, json, os, configparser
+    import argparse
+    import json
+    import os
+    import configparser
 
     client, token = None, None
 
@@ -32,15 +37,45 @@ if __name__ == '__main__':
     if 'WIUPPY_TOKEN' in os.environ:
         token = os.environ['WIUPPY_TOKEN']
 
-    parser = argparse.ArgumentParser(description='Make a request against the WIU API')
-    parser.add_argument('-C', '--client', required=not bool(client), help="Where's It Up client ID (required)")
-    parser.add_argument('-T', '--token', required=not bool(token), help="Where's It Up client token (required)")
+    parser = argparse.ArgumentParser(
+        description='Make a request against the WIU API'
+    )
+    parser.add_argument(
+        '-C',
+        '--client',
+        required=not bool(client),
+        help="Where's It Up client ID (required)"
+    )
+    parser.add_argument(
+        '-T',
+        '--token',
+        required=not bool(token),
+        help="Where's It Up client token (required)"
+    )
     parser.add_argument('-u', '--uri', help='uri to query')
     parser.add_argument('-t', '--tests', help='comma-separated tests to run')
-    parser.add_argument('-l', '--locations', help='comma-separated server locations to run from')
-    parser.add_argument('-j', '--job', help='job ID for an existing request to retrieve')
-    parser.add_argument('-p', '--poll', action='store_true', help='query the API until the job is complete')
-    parser.add_argument('-o', '--option', action='append', help='set an option for a test as <test>:<option>=<value>, e.g.  nametime:nameserver=8.8.8.8')
+    parser.add_argument(
+        '-l',
+        '--locations',
+        help='comma-separated server locations to run from'
+    )
+    parser.add_argument(
+        '-j',
+        '--job',
+        help='job ID for an existing request to retrieve'
+    )
+    parser.add_argument(
+        '-p',
+        '--poll',
+        action='store_true',
+        help='query the API until the job is complete')
+
+    parser.add_argument(
+        '-o',
+        '--option',
+        action='append',
+        help='set an option for a test as <test>:<option>=<value>, e.g.  nametime:nameserver=8.8.8.8'
+    )
     args = parser.parse_args()
 
     # set up the api using auth information from the environment, config file,
@@ -90,6 +125,7 @@ if __name__ == '__main__':
 
     # with no arguments, print the server list
     try:
-        print(json.dumps([server['name'] for server in api.locations()['sources']]))
+        print(json.dumps(
+            [server['name'] for server in api.locations()['sources']]))
     except wiu.Error as e:
         print(e)

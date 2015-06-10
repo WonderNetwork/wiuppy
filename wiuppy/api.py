@@ -2,8 +2,10 @@ import requests
 import requests.exceptions
 import json
 
+
 class Error(Exception):
     pass
+
 
 class WIU:
     """
@@ -14,7 +16,7 @@ class WIU:
         headers: [dict]   Headers to send with API calls
     """
     URL = 'https://api.wheresitup.com/v4/'
-    headers = { 'Content-Type': 'application/json' }
+    headers = {'Content-Type': 'application/json'}
 
     def __init__(self, client, token):
         """
@@ -29,8 +31,8 @@ class WIU:
             ValueError: The client or token is invalid
         """
         self.headers['Auth'] = 'Bearer ' \
-            + self._is_valid_id(client) + ' ' \
-            + self._is_valid_id(token)
+                               + self._is_valid_id(client) + ' ' \
+                               + self._is_valid_id(token)
 
     def locations(self):
         """
@@ -45,7 +47,7 @@ class WIU:
         """
         return self._get('sources')
 
-    def submit(self, target, tests, locations, options = {}):
+    def submit(self, target, tests, locations, options={}):
         """
         Submit a new WIU job
         http://api.wheresitup.com/docs/v4#jobs
@@ -76,7 +78,7 @@ class WIU:
         except KeyError:
             raise Error('Submission failed: ' + response['message'])
 
-    def retrieve(self, id):
+    def retrieve(self, id_):
         """
         Get the current results for an existing WIU job
         http://api.wheresitup.com/docs/v4#reports
@@ -91,7 +93,7 @@ class WIU:
             ValueError: The ID is invalid
             Error: API communication failed, or the job was not found
         """
-        results = self._get('jobs/' + self._is_valid_id(id))
+        results = self._get('jobs/' + self._is_valid_id(id_))
 
         if 'response' not in results:
             raise Error(results['message'])
@@ -100,7 +102,10 @@ class WIU:
 
     def _get(self, endpoint):
         try:
-            return requests.get(self.URL + endpoint, headers=self.headers).json()
+            return requests.get(
+                self.URL + endpoint,
+                headers=self.headers
+            ).json()
         except requests.exceptions.RequestException as e:
             raise Error('Error talking to the API: ' + str(e))
 
@@ -114,6 +119,7 @@ class WIU:
         except requests.exceptions.RequestException as e:
             raise Error('Error talking to the API: ' + str(e))
 
-    def _is_valid_id(self, id):
-        int(id, 16)
-        return id
+    @staticmethod
+    def _is_valid_id(id_):
+        int(id_, 16)
+        return id_

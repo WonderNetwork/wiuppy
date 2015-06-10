@@ -3,15 +3,16 @@ from time import sleep
 
 from .api import WIU
 
+
 class Job:
     """
     One Where's It Up job wrapped around the WIU interface
 
     Attributes:
         uri:       [string] For jobs to be submitted, the URI to test
-        tests:  [list]   tests to be performed on the URI
+        tests:     [list]   tests to be performed on the URI
         locations: [list]   WonderNetwork servers to perform tests from
-        options: [dict] Options for the tests requested
+        options:   [dict]   Options for the tests requested
         results:   [dict]   For submitted jobs, the API-returned results
     """
     uri = ''
@@ -20,15 +21,15 @@ class Job:
     options = {}
     results = {}
 
-    def __init__(self, api, id=''):
+    def __init__(self, api, id_=''):
         """
         Initialize a WIU job (new or pre-existing)
 
         Args:
-            api: [WIU] WIU instance
-            id: [string] If present, the job ID for a previously-submitted job
+            api: [WIU]    WIU instance
+            id:  [string] If present, the job ID for a previously-submitted job
         """
-        self.id = id
+        self.id = id_
         self._api = api
 
     @property
@@ -50,8 +51,8 @@ class Job:
 
         Args:
             poll: [bool] If True, queries the API once per second until the
-                results are complete.
-                Default: False
+                         results are complete.
+                         Default: False
 
         Returns:
             self
@@ -71,17 +72,26 @@ class Job:
         Returns:
             self
         """
-        self.id = self._api.submit(self.uri, self.tests, self.locations, self.options)
+        self.id = self._api.submit(
+            self.uri,
+            self.tests,
+            self.locations,
+            self.options
+        )
 
         return self
 
     def __str__(self):
-        out = { 'Job ID': self.id }
+        out = {'Job ID': self.id}
         if self.results:
             out['results'] = {
                 server: {
-                    test: results['summary'] for (test, results) in tests.items()
-                } for (server, tests) in self.results['response']['complete'].items()
+                    test: results['summary']
+                    for (test, results)
+                    in tests.items()
+                }
+                for (server, tests)
+                in self.results['response']['complete'].items()
             }
 
         return json.dumps(out, indent=4)
