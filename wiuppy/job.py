@@ -11,13 +11,13 @@ class Job:
     Attributes:
         uri:       [string] For jobs to be submitted, the URI to test
         tests:     [list]   tests to be performed on the URI
-        locations: [list]   WonderNetwork servers to perform tests from
+        servers:   [list]   WonderNetwork servers to perform tests from
         options:   [dict]   Options for the tests requested
         results:   [dict]   For submitted jobs, the API-returned results
     """
     uri = ''
     tests = []
-    locations = []
+    servers = []
     options = {}
     results = {}
 
@@ -74,8 +74,8 @@ class Job:
         """
         self.id = self._api.submit(
             self.uri,
+            self.servers,
             self.tests,
-            self.locations,
             self.options
         )
 

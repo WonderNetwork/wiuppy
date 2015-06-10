@@ -55,8 +55,8 @@ if __name__ == '__main__':
     parser.add_argument('-u', '--uri', help='uri to query')
     parser.add_argument('-t', '--tests', help='comma-separated tests to run')
     parser.add_argument(
-        '-l',
-        '--locations',
+        '-s',
+        '--servers',
         help='comma-separated server locations to run from'
     )
     parser.add_argument(
@@ -96,12 +96,12 @@ if __name__ == '__main__':
         exit()
 
     # if a new job is requested, submit it and get the id
-    if args.uri and args.tests and args.locations:
+    if args.uri and args.tests and args.servers:
         job = wiu.Job(api)
 
         job.uri = args.uri
         job.tests = args.tests.split(',')
-        job.locations = args.locations.split(',')
+        job.servers = args.servers.split(',')
         job.options = {}
 
         if args.option:
@@ -126,6 +126,6 @@ if __name__ == '__main__':
     # with no arguments, print the server list
     try:
         print(json.dumps(
-            [server['name'] for server in api.locations()['sources']]))
+            [server['name'] for server in api.servers()]))
     except wiu.Error as e:
         print(e)

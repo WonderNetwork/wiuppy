@@ -34,7 +34,7 @@ class WIU:
                                + self._is_valid_id(client) + ' ' \
                                + self._is_valid_id(token)
 
-    def locations(self):
+    def servers(self):
         """
         Get the list of available WIU servers
         http://api.wheresitup.com/docs/v4#sources
@@ -45,9 +45,9 @@ class WIU:
         Raises:
             Error: API communication failed
         """
-        return self._get('sources')
+        return self._get('sources')['sources']
 
-    def submit(self, target, tests, locations, options={}):
+    def submit(self, target, servers, tests, options={}):
         """
         Submit a new WIU job
         http://api.wheresitup.com/docs/v4#jobs
@@ -56,7 +56,7 @@ class WIU:
             target: [string] The URI to be tested
             tests: [list] tests to be performed on the URI
                 See also: http://api.wheresitup.com/docs/v4#tests
-            locations: [list] WIU servers to perform tests from
+            servers: [list] WIU servers to perform tests from
 
         Returns:
             A string containing the new job ID
@@ -67,7 +67,7 @@ class WIU:
         data = {
             'uri': target,
             'tests': tests,
-            'sources': locations,
+            'sources': servers,
             'options': options
         }
 
