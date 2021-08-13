@@ -30,7 +30,7 @@ import wiuppy
 
 # get the servers available
 api = wiuppy.WIU(wiu_client_id, wiu_client_token)
-print(api.locations())
+print(api.servers())
 
 # submit a new job requesting pings from Denver to www.google.com
 api = wiuppy.WIU(wiu_client_id, wiu_client_token)
@@ -51,7 +51,7 @@ job = wiuppy.Job(api)
 
 job.uri = 'http://www.google.com'
 job.tests = [ 'ping', 'dig', 'trace' ]
-job.locations = [ 'Denver', 'Lima', 'Sydney' ]
+job.servers = [ 'Denver', 'Lima', 'Sydney' ]
 
 job_id = job.submit().id # fluent interface
 job.retrieve(poll=True)  # query the API until all the tasks are done
@@ -69,7 +69,7 @@ For convenience, a command-line client is bundled with this project.
 
 ```
 usage: wiuppy.py [-h] [-C CLIENT] [-T TOKEN] [-u URI] [-t TESTS]
-                 [-l LOCATIONS] [-j JOB] [-p] [-f]
+                 [-s SERVERS] [-j JOB] [-p] [-f]
 
 Make a request against the WIU API
 
@@ -82,7 +82,7 @@ optional arguments:
   -u URI, --uri URI     uri to query
   -t TESTS, --tests TESTS
                         comma-separated tests to run
-  -l LOCATIONS, --locations LOCATIONS
+  -s SERVERS, --servers SERVERS
                         comma-separated server locations to run from
   -j JOB, --job JOB     job ID for an existing request to retrieve
   -p, --poll            query the API until the job is complete
